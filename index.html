@@ -218,7 +218,7 @@
       <button class="sqrt" onclick="calculateSquareRoot()">&radic;</button>
       <button class="cbrt" onclick="calculateCubeRoot()">&#8731;</button>
 
-      <button class="percent" onclick="calculatePercentage()">%</button>
+      <button class="percent" onclick="appendValue('%')">%</button>
       <button class="equals" onclick="calculate()">=</button>
     </div>
 
@@ -274,7 +274,7 @@
     }
 
     function isOperator(value) {
-      return ['+', '-', '*', '/', '^'].includes(value);
+      return ['+', '-', '*', '/', '^', '%'].includes(value);
     }
 
     function clearDisplay() {
@@ -296,22 +296,14 @@
       currentDisplay.textContent += '^(1/3)';
     }
 
-    function calculatePercentage() {
-      try {
-        let value = parseFloat(currentDisplay.textContent);
-        currentDisplay.textContent = value / 100;
-      } catch (error) {
-        currentDisplay.textContent = 'Error';
-      }
-    }
-
     function calculate() {
       try {
         let expression = currentDisplay.textContent;
-        if (/[+\-*/^]$/.test(expression)) {
+        if (/[+\-*/^%]$/.test(expression)) {
           expression = expression.slice(0, -1);
         }
         expression = expression.replace(/\^/g, '**');
+        expression = expression.replace(/(\d+(\.\d+)?)%/g, '($1/100)');
         const result = eval(expression);
         historyDisplay.textContent = currentDisplay.textContent + ' = ' + result;
         currentDisplay.textContent = result;
