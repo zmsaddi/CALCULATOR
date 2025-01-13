@@ -144,6 +144,46 @@
     .converter button:hover {
       background-color: #45a049;
     }
+    @media (max-width: 768px) {
+      .buttons {
+        gap: 10px;
+      }
+      .buttons button {
+        font-size: 1.2em;
+        padding: 10px;
+      }
+      .display-container {
+        padding: 10px;
+      }
+      .current {
+        font-size: 2em;
+      }
+      .history {
+        font-size: 0.9em;
+      }
+    }
+    @media (max-width: 480px) {
+      .buttons {
+        grid-template-columns: repeat(4, 1fr);
+        gap: 8px;
+      }
+      .buttons button {
+        font-size: 1.1em;
+        padding: 12px;
+        border-radius: 12px;
+      }
+      .buttons button.equals {
+        grid-column: span 4;
+      }
+      .converter select,
+      .converter input {
+        width: calc(100% - 20px);
+        margin: 5px 0;
+      }
+      .converter button {
+        font-size: 0.9em;
+      }
+    }
   </style>
 </head>
 <body>
@@ -157,21 +197,22 @@
       <button class="backspace" onclick="backspace()">&larr;</button>
       <button class="percent" onclick="appendValue('%')">%</button>
       <button class="operator" onclick="appendValue('/')">&divide;</button>
+      <button class="operator" onclick="appendValue('*')">&times;</button>
 
       <button onclick="appendValue('7')">7</button>
       <button onclick="appendValue('8')">8</button>
       <button onclick="appendValue('9')">9</button>
-      <button class="operator" onclick="appendValue('*')">&times;</button>
+      <button class="operator" onclick="appendValue('-')">&minus;</button>
 
       <button onclick="appendValue('4')">4</button>
       <button onclick="appendValue('5')">5</button>
       <button onclick="appendValue('6')">6</button>
-      <button class="operator" onclick="appendValue('-')">&minus;</button>
+      <button class="operator" onclick="appendValue('+')">+</button>
 
       <button onclick="appendValue('1')">1</button>
       <button onclick="appendValue('2')">2</button>
       <button onclick="appendValue('3')">3</button>
-      <button class="operator" onclick="appendValue('+')">+</button>
+      <button class="operator" onclick="appendValue('^')">x<sup>y</sup></button>
 
       <button onclick="appendValue('0')">0</button>
       <button onclick="appendValue('.')">.</button>
@@ -180,6 +221,7 @@
 
       <button class="equals" onclick="calculate()">=</button>
     </div>
+
     <div class="converter">
       <h3>Unit Converter</h3>
       <div>
@@ -200,6 +242,7 @@
       </div>
     </div>
   </div>
+
   <script>
     const historyDisplay = document.getElementById('history');
     const currentDisplay = document.getElementById('current');
@@ -213,12 +256,15 @@
     });
 
     function appendValue(value) {
-      if (newCalculation && !isOperator(value)) {
+      if (newCalculation) {
         currentDisplay.textContent = value;
         newCalculation = false;
       } else {
-        currentDisplay.textContent += value;
-        newCalculation = false;
+        if (currentDisplay.textContent === '0') {
+          currentDisplay.textContent = value;
+        } else {
+          currentDisplay.textContent += value;
+        }
       }
     }
 
@@ -229,6 +275,7 @@
     function clearDisplay() {
       historyDisplay.textContent = '0';
       currentDisplay.textContent = '0';
+      newCalculation = false;
     }
 
     function backspace() {
@@ -237,17 +284,17 @@
     }
 
     function calculateSquareRoot() {
-      currentDisplay.textContent += '^(0.5)';
+      currentDisplay.textContent = Math.sqrt(parseFloat(currentDisplay.textContent));
     }
 
     function calculateCubeRoot() {
-      currentDisplay.textContent += '^(1/3)';
+      currentDisplay.textContent = Math.cbrt(parseFloat(currentDisplay.textContent));
     }
 
     function calculate() {
       try {
         let expression = currentDisplay.textContent;
-        expression = expression.replace(/(\d+)%/g, '(($1)/100)');
+        expression = expression.replace(/(\d+)%/g, '($1/100)');
         const result = eval(expression);
         historyDisplay.textContent = expression + ' = ' + result;
         currentDisplay.textContent = result;
@@ -255,6 +302,37 @@
       } catch (error) {
         currentDisplay.textContent = 'Error';
       }
+    }
+
+    function convertUnits() {
+      const input = parseFloat(document.getElementById('converterInput').value);
+      const unitFrom = document.getElementById('unitFrom').value;
+      const unitTo = document.getElementById('unitTo').value;
+
+      if (isNaN(input)) {
+        alert('Please enter a valid number');
+        return;
+      }
+
+      let valueInMeters;
+      switch (unitFrom) {
+        case 'm': valueInMeters = input; break;
+        case 'km': valueInMeters = input * 1000; break;
+        case 'cm': valueInMeters = input / 100; break;
+        case 'mm': valueInMeters = input / 1000; break;
+        default: valueInMeters = input; break;
+      }
+
+      let result;
+      switch (unitTo) {
+        case 'm': result = valueInMeters; break;
+        case 'km': result = valueInMeters / 1000; break;
+        case 'cm': result = valueInMeters * 100; break;
+        case 'mm': result = valueInMeters * 1000; break;
+        default: result = valueInMeters; break;
+      }
+
+      alert(`Converted Value: ${result} ${unitTo}`);
     }
   </script>
 </body>
