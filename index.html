@@ -194,10 +194,8 @@
       <button class="sqrt" onclick="calculateSquareRoot()">√</button>
       <button class="equals" onclick="calculate()">=</button>
 
-      <!-- Optional extra row for additional functions -->
       <button class="cbrt" onclick="calculateCubeRoot()">∛</button>
       <button class="operator" onclick="appendValue('^')">x<sup>y</sup></button>
-      <!-- These buttons span the remaining grid cells -->
       <button style="visibility:hidden;"></button>
       <button style="visibility:hidden;"></button>
     </div>
@@ -210,12 +208,14 @@
         <option value="km">Kilometers</option>
         <option value="cm">Centimeters</option>
         <option value="mm">Millimeters</option>
+        <option value="in">Inches</option>
       </select>
       <select id="unitTo">
         <option value="m">Meters</option>
         <option value="km">Kilometers</option>
         <option value="cm">Centimeters</option>
         <option value="mm">Millimeters</option>
+        <option value="in">Inches</option>
       </select>
       <button onclick="convertUnits()">Convert</button>
       <div id="conversionResult"></div>
@@ -306,6 +306,7 @@
         case 'km': valueInMeters = input * 1000; break;
         case 'cm': valueInMeters = input / 100; break;
         case 'mm': valueInMeters = input / 1000; break;
+        case 'in': valueInMeters = input * 0.0254; break;
         default: valueInMeters = input; break;
       }
 
@@ -315,6 +316,7 @@
         case 'km': result = valueInMeters / 1000; break;
         case 'cm': result = valueInMeters * 100; break;
         case 'mm': result = valueInMeters * 1000; break;
+        case 'in': result = valueInMeters / 0.0254; break;
         default: result = valueInMeters; break;
       }
 
