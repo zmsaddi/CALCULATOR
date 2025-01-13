@@ -155,9 +155,28 @@
       }
     }
     @media (max-width: 480px) {
+      .buttons {
+        grid-gap: 8px;
+        grid-template-columns: repeat(4, 1fr);
+      }
       .buttons button {
-        font-size: 1.2em;
-        padding: 15px 0;
+        font-size: 1.3em;
+        padding: 18px 0;
+      }
+      .display-container {
+        padding: 10px;
+      }
+      .current {
+        font-size: 2em;
+      }
+      .history {
+        font-size: 0.85em;
+      }
+      .converter input,
+      .converter select,
+      .converter button {
+        font-size: 1em;
+        padding: 12px;
       }
     }
   </style>
@@ -218,7 +237,6 @@
         <option value="in">Inches</option>
       </select>
       <button onclick="convertUnits()">Convert</button>
-      <div id="conversionResult"></div>
     </div>
   </div>
 
@@ -270,14 +288,12 @@
       try {
         let expression = currentDisplay.textContent;
 
-        // Handle cases like "A + B%" or "A - B%" where B% is percentage of A
         expression = expression.replace(/(\d+(?:\.\d+)?)(\s*[+\-]\s*)(\d+(?:\.\d+)?)%/g, (_, base, operator, perc) => {
           let baseValue = parseFloat(base);
           let percentageValue = (baseValue * parseFloat(perc)) / 100;
           return base + operator + percentageValue;
         });
 
-        // For remaining percentages, treat them normally
         expression = expression.replace(/(\d+(?:\.\d+)?)%/g, '($1/100)');
 
         const result = eval(expression);
@@ -293,10 +309,10 @@
       const input = parseFloat(document.getElementById('converterInput').value);
       const unitFrom = document.getElementById('unitFrom').value;
       const unitTo = document.getElementById('unitTo').value;
-      const resultDisplay = document.getElementById('conversionResult');
 
       if (isNaN(input)) {
-        resultDisplay.textContent = 'Please enter a valid number';
+        historyDisplay.textContent = 'Please enter a valid number';
+        currentDisplay.textContent = '0';
         return;
       }
 
@@ -320,7 +336,9 @@
         default: result = valueInMeters; break;
       }
 
-      resultDisplay.textContent = `${result} ${unitTo}`;
+      historyDisplay.textContent = `Converted: ${input} ${unitFrom} → ${result} ${unitTo}`;
+      currentDisplay.textContent = `${result} ${unitTo}`;
+      newCalculation = true;
     }
   </script>
 </body>
