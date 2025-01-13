@@ -221,7 +221,7 @@
     <button onclick="convertCurrency()">Convert Currency</button>
     <div id="currencyConversionResult"></div>
     <p style="font-size:0.8em; color:#888; text-align:center;">
-      Rates provided by <a href="https://exchangerate.host/" target="_blank">ExchangeRate.host</a>
+      Rates provided by <a href="https://open.er-api.com/" target="_blank">Open Exchange Rates</a>
     </p>
   </div>
 
@@ -341,7 +341,7 @@
         return;
       }
 
-      const url = `https://api.exchangerate.host/convert?from=${from}&to=${to}&amount=${amount}`;
+      const url = `https://open.er-api.com/v6/latest/${from}`;
 
       resultElement.textContent = 'Fetching conversion rates...';
 
@@ -353,10 +353,12 @@
           return response.json();
         })
         .then((data) => {
-          if (data && typeof data.result === 'number') {
+          if (data && data.rates && data.rates[to]) {
+            const rate = data.rates[to];
+            const convertedAmount = amount * rate;
             resultElement.innerHTML = `
-              <strong>${amount} ${from} = ${data.result.toFixed(2)} ${to}</strong><br>
-              Exchange Rate: 1 ${from} = ${data.info.rate.toFixed(4)} ${to}
+              <strong>${amount} ${from} = ${convertedAmount.toFixed(2)} ${to}</strong><br>
+              Exchange Rate: 1 ${from} = ${rate.toFixed(4)} ${to}
             `;
           } else {
             resultElement.textContent = 'Error: Unable to fetch conversion data.';
