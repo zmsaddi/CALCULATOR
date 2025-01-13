@@ -153,31 +153,27 @@
       <div class="current" id="current">0</div>
     </div>
     <div class="buttons">
+      <!-- Calculator buttons here -->
       <button class="clear" onclick="clearDisplay()">C</button>
       <button class="backspace" onclick="backspace()">&larr;</button>
       <button class="percent" onclick="appendValue('%')">%</button>
       <button class="operator" onclick="appendValue('/')">&divide;</button>
-
       <button onclick="appendValue('7')">7</button>
       <button onclick="appendValue('8')">8</button>
       <button onclick="appendValue('9')">9</button>
       <button class="operator" onclick="appendValue('*')">&times;</button>
-
       <button onclick="appendValue('4')">4</button>
       <button onclick="appendValue('5')">5</button>
       <button onclick="appendValue('6')">6</button>
       <button class="operator" onclick="appendValue('-')">&minus;</button>
-
       <button onclick="appendValue('1')">1</button>
       <button onclick="appendValue('2')">2</button>
       <button onclick="appendValue('3')">3</button>
       <button class="operator" onclick="appendValue('+')">+</button>
-
       <button onclick="appendValue('0')">0</button>
       <button onclick="appendValue('.')">.</button>
       <button class="sqrt" onclick="calculateSquareRoot()">√</button>
       <button class="equals" onclick="calculate()">=</button>
-
       <button class="cbrt" onclick="calculateCubeRoot()">∛</button>
       <button class="operator" onclick="appendValue('^')">x<sup>y</sup></button>
       <button style="visibility:hidden;"></button>
@@ -227,6 +223,9 @@
     </select>
     <button onclick="convertCurrency()">Convert Currency</button>
     <div id="currencyConversionResult"></div>
+    <p style="font-size:0.8em; color:#888; text-align:center;">
+      Rates provided by ExchangeRate.host
+    </p>
   </div>
 
   <script>
@@ -350,6 +349,7 @@
         return;
       }
 
+      // Link to a live currency conversion API: ExchangeRate.host
       const url = `https://api.exchangerate.host/convert?from=${from}&to=${to}&amount=${amount}`;
 
       fetch(url)
