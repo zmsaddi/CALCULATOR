@@ -153,7 +153,6 @@
       <div class="current" id="current">0</div>
     </div>
     <div class="buttons">
-      <!-- Calculator buttons here -->
       <button class="clear" onclick="clearDisplay()">C</button>
       <button class="backspace" onclick="backspace()">&larr;</button>
       <button class="percent" onclick="appendValue('%')">%</button>
@@ -172,12 +171,10 @@
       <button class="operator" onclick="appendValue('+')">+</button>
       <button onclick="appendValue('0')">0</button>
       <button onclick="appendValue('.')">.</button>
-      <button class="sqrt" onclick="calculateSquareRoot()">√</button>
+      <button class="sqrt" onclick="calculateSquareRoot()">&radic;</button>
       <button class="equals" onclick="calculate()">=</button>
-      <button class="cbrt" onclick="calculateCubeRoot()">∛</button>
+      <button class="cbrt" onclick="calculateCubeRoot()">&radic;<sup>3</sup></button>
       <button class="operator" onclick="appendValue('^')">x<sup>y</sup></button>
-      <button style="visibility:hidden;"></button>
-      <button style="visibility:hidden;"></button>
     </div>
   </div>
 
@@ -224,7 +221,7 @@
     <button onclick="convertCurrency()">Convert Currency</button>
     <div id="currencyConversionResult"></div>
     <p style="font-size:0.8em; color:#888; text-align:center;">
-      Rates provided by ExchangeRate.host
+      Rates provided by <a href="https://exchangerate.host/" target="_blank">ExchangeRate.host</a>
     </p>
   </div>
 
@@ -238,23 +235,18 @@
       document.getElementById('converterSection').style.display = 'none';
       document.getElementById('currencyConverterSection').style.display = 'none';
     }
+
     function showConverter() {
       document.getElementById('calculatorSection').style.display = 'none';
       document.getElementById('converterSection').style.display = 'block';
       document.getElementById('currencyConverterSection').style.display = 'none';
     }
+
     function showCurrencyConverter() {
       document.getElementById('calculatorSection').style.display = 'none';
       document.getElementById('converterSection').style.display = 'none';
       document.getElementById('currencyConverterSection').style.display = 'block';
     }
-
-    document.addEventListener('keydown', function(e) {
-      if (e.key === 'Enter') {
-        e.preventDefault();
-        calculate();
-      }
-    });
 
     function appendValue(value) {
       if (newCalculation) {
@@ -344,26 +336,35 @@
       const to = document.getElementById('currencyTo').value;
       const resultElement = document.getElementById('currencyConversionResult');
 
-      if (isNaN(amount)) {
-        resultElement.textContent = 'Please enter a valid amount';
+      if (isNaN(amount) || amount <= 0) {
+        resultElement.textContent = 'Please enter a valid amount greater than 0.';
         return;
       }
 
-      // Link to a live currency conversion API: ExchangeRate.host
       const url = `https://api.exchangerate.host/convert?from=${from}&to=${to}&amount=${amount}`;
 
+      resultElement.textContent = 'Fetching conversion rates...';
+
       fetch(url)
-        .then(response => response.json())
-        .then(data => {
-          if(data.result !== undefined) {
-            resultElement.textContent = `${amount} ${from} = ${data.result.toFixed(2)} ${to}`;
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+          return response.json();
+        })
+        .then((data) => {
+          if (data && typeof data.result === 'number') {
+            resultElement.innerHTML = `
+              <strong>${amount} ${from} = ${data.result.toFixed(2)} ${to}</strong><br>
+              Exchange Rate: 1 ${from} = ${data.info.rate.toFixed(4)} ${to}
+            `;
           } else {
-            resultElement.textContent = 'Conversion error.';
+            resultElement.textContent = 'Error: Unable to fetch conversion data.';
           }
         })
-        .catch(error => {
-          resultElement.textContent = 'Error fetching conversion rates.';
-          console.error(error);
+        .catch((error) => {
+          console.error('Error fetching conversion rates:', error);
+          resultElement.textContent = 'Error: Unable to fetch conversion rates. Please try again later.';
         });
     }
   </script>
