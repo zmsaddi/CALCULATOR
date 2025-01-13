@@ -157,6 +157,11 @@
     .converter button:hover {
       background-color: #45a049;
     }
+    #conversionResult {
+      margin-top: 10px;
+      font-weight: bold;
+      text-align: center;
+    }
     @media (max-width: 480px) {
       .buttons {
         grid-gap: 8px;
@@ -245,6 +250,7 @@
       <option value="in">Inches</option>
     </select>
     <button onclick="convertUnits()">Convert</button>
+    <div id="conversionResult"></div>
   </div>
 
   <script>
@@ -320,10 +326,10 @@
       const input = parseFloat(document.getElementById('converterInput').value);
       const unitFrom = document.getElementById('unitFrom').value;
       const unitTo = document.getElementById('unitTo').value;
+      const resultElement = document.getElementById('conversionResult');
 
       if (isNaN(input)) {
-        historyDisplay.textContent = 'Please enter a valid number';
-        currentDisplay.textContent = '0';
+        resultElement.textContent = 'Please enter a valid number';
         return;
       }
 
@@ -347,9 +353,7 @@
         default: result = valueInMeters; break;
       }
 
-      historyDisplay.textContent = `Converted: ${input} ${unitFrom} → ${result} ${unitTo}`;
-      currentDisplay.textContent = `${result} ${unitTo}`;
-      newCalculation = true;
+      resultElement.textContent = `${result} ${unitTo}`;
     }
   </script>
 </body>
