@@ -78,7 +78,7 @@
     .buttons button.equals {
       background-color: #4caf50;
       color: #ffffff;
-      grid-column: span 2;
+      grid-column: span 1;
     }
     .buttons button.equals:hover {
       background-color: #43a047;
@@ -144,6 +144,10 @@
     .converter button:hover {
       background-color: #45a049;
     }
+    #conversionResult {
+      margin-top:10px;
+      font-weight:bold;
+    }
     @media (max-width: 768px) {
       .buttons {
         gap: 10px;
@@ -193,33 +197,42 @@
       <div class="current" id="current">0</div>
     </div>
     <div class="buttons">
+      <!-- Row 1 -->
       <button class="clear" onclick="clearDisplay()">C</button>
       <button class="backspace" onclick="backspace()">&larr;</button>
       <button class="percent" onclick="appendValue('%')">%</button>
       <button class="operator" onclick="appendValue('/')">&divide;</button>
-      <button class="operator" onclick="appendValue('*')">&times;</button>
 
+      <!-- Row 2 -->
       <button onclick="appendValue('7')">7</button>
       <button onclick="appendValue('8')">8</button>
       <button onclick="appendValue('9')">9</button>
-      <button class="operator" onclick="appendValue('-')">&minus;</button>
+      <button class="operator" onclick="appendValue('*')">&times;</button>
 
+      <!-- Row 3 -->
       <button onclick="appendValue('4')">4</button>
       <button onclick="appendValue('5')">5</button>
       <button onclick="appendValue('6')">6</button>
-      <button class="operator" onclick="appendValue('+')">+</button>
+      <button class="operator" onclick="appendValue('-')">&minus;</button>
 
+      <!-- Row 4 -->
       <button onclick="appendValue('1')">1</button>
       <button onclick="appendValue('2')">2</button>
       <button onclick="appendValue('3')">3</button>
-      <button class="operator" onclick="appendValue('^')">x<sup>y</sup></button>
+      <button class="operator" onclick="appendValue('+')">+</button>
 
+      <!-- Row 5 -->
       <button onclick="appendValue('0')">0</button>
       <button onclick="appendValue('.')">.</button>
       <button class="sqrt" onclick="calculateSquareRoot()">&radic;</button>
-      <button class="cbrt" onclick="calculateCubeRoot()">&#8731;</button>
-
       <button class="equals" onclick="calculate()">=</button>
+
+      <!-- Row 6 (Optional functions) -->
+      <button class="cbrt" onclick="calculateCubeRoot()">&#8731;</button>
+      <button class="operator" onclick="appendValue('^')">x<sup>y</sup></button>
+      <!-- Empty cells to maintain grid structure -->
+      <div></div>
+      <div></div>
     </div>
 
     <div class="converter">
@@ -240,6 +253,7 @@
         </select>
         <button onclick="convertUnits()">Convert</button>
       </div>
+      <div id="conversionResult"></div>
     </div>
   </div>
 
@@ -294,9 +308,19 @@
     function calculate() {
       try {
         let expression = currentDisplay.textContent;
-        expression = expression.replace(/(\d+)%/g, '($1/100)');
+
+        // Handle cases like "A + B%" or "A - B%" where B% is percentage of A
+        expression = expression.replace(/(\d+(?:\.\d+)?)(\s*[+\-]\s*)(\d+(?:\.\d+)?)%/g, (_, base, operator, perc) => {
+          let baseValue = parseFloat(base);
+          let percentageValue = (baseValue * parseFloat(perc)) / 100;
+          return base + operator + percentageValue;
+        });
+
+        // For remaining percentages, treat them normally
+        expression = expression.replace(/(\d+(?:\.\d+)?)%/g, '($1/100)');
+
         const result = eval(expression);
-        historyDisplay.textContent = expression + ' = ' + result;
+        historyDisplay.textContent = currentDisplay.textContent + ' = ' + result;
         currentDisplay.textContent = result;
         newCalculation = true;
       } catch (error) {
@@ -308,9 +332,10 @@
       const input = parseFloat(document.getElementById('converterInput').value);
       const unitFrom = document.getElementById('unitFrom').value;
       const unitTo = document.getElementById('unitTo').value;
+      const resultDisplay = document.getElementById('conversionResult');
 
       if (isNaN(input)) {
-        alert('Please enter a valid number');
+        resultDisplay.textContent = 'Please enter a valid number';
         return;
       }
 
@@ -332,7 +357,7 @@
         default: result = valueInMeters; break;
       }
 
-      alert(`Converted Value: ${result} ${unitTo}`);
+      resultDisplay.textContent = `${result} ${unitTo}`;
     }
   </script>
 </body>
