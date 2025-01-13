@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Mobile-Friendly Calculator and Converter</title>
+  <title>Mobile-Friendly Tools</title>
   <style>
     body {
       font-family: 'Roboto', sans-serif;
@@ -86,56 +86,24 @@
     .buttons button:active {
       transform: scale(0.98);
     }
-    .buttons button.operator {
-      background-color: #ffab91;
-      color: #ffffff;
-    }
-    .buttons button.operator:hover {
-      background-color: #ff8a65;
-    }
+    .buttons button.operator { background-color: #ffab91; color: #ffffff; }
+    .buttons button.operator:hover { background-color: #ff8a65; }
     .buttons button.equals {
       background-color: #4caf50;
       color: #ffffff;
       grid-column: span 2;
     }
-    .buttons button.equals:hover {
-      background-color: #43a047;
-    }
-    .buttons button.clear {
-      background-color: #f44336;
-      color: white;
-    }
-    .buttons button.clear:hover {
-      background-color: #e53935;
-    }
-    .buttons button.sqrt {
-      background-color: #2196F3;
-      color: white;
-    }
-    .buttons button.sqrt:hover {
-      background-color: #1976D2;
-    }
-    .buttons button.cbrt {
-      background-color: #FFEB3B;
-      color: #000;
-    }
-    .buttons button.cbrt:hover {
-      background-color: #FBC02D;
-    }
-    .buttons button.backspace {
-      background-color: #ff5722;
-      color: white;
-    }
-    .buttons button.backspace:hover {
-      background-color: #e64a19;
-    }
-    .buttons button.percent {
-      background-color: #9c27b0;
-      color: white;
-    }
-    .buttons button.percent:hover {
-      background-color: #7b1fa2;
-    }
+    .buttons button.equals:hover { background-color: #43a047; }
+    .buttons button.clear { background-color: #f44336; color: white; }
+    .buttons button.clear:hover { background-color: #e53935; }
+    .buttons button.sqrt { background-color: #2196F3; color: white; }
+    .buttons button.sqrt:hover { background-color: #1976D2; }
+    .buttons button.cbrt { background-color: #FFEB3B; color: #000; }
+    .buttons button.cbrt:hover { background-color: #FBC02D; }
+    .buttons button.backspace { background-color: #ff5722; color: white; }
+    .buttons button.backspace:hover { background-color: #e64a19; }
+    .buttons button.percent { background-color: #9c27b0; color: white; }
+    .buttons button.percent:hover { background-color: #7b1fa2; }
     .converter select,
     .converter input,
     .converter button {
@@ -154,37 +122,21 @@
       cursor: pointer;
       transition: background-color 0.3s;
     }
-    .converter button:hover {
-      background-color: #45a049;
-    }
-    #conversionResult {
+    .converter button:hover { background-color: #45a049; }
+    #conversionResult, #currencyConversionResult {
       margin-top: 10px;
       font-weight: bold;
       text-align: center;
     }
     @media (max-width: 480px) {
-      .buttons {
-        grid-gap: 8px;
-      }
-      .buttons button {
-        font-size: 1.3em;
-        padding: 18px 0;
-      }
-      .display-container {
-        padding: 10px;
-      }
-      .current {
-        font-size: 2em;
-      }
-      .history {
-        font-size: 0.85em;
-      }
+      .buttons { grid-gap: 8px; }
+      .buttons button { font-size: 1.3em; padding: 18px 0; }
+      .display-container { padding: 10px; }
+      .current { font-size: 2em; }
+      .history { font-size: 0.85em; }
       .converter input,
       .converter select,
-      .converter button {
-        font-size: 1em;
-        padding: 12px;
-      }
+      .converter button { font-size: 1em; padding: 12px; }
     }
   </style>
 </head>
@@ -192,6 +144,7 @@
   <div class="toggle-buttons">
     <button onclick="showCalculator()">Open Calculator</button>
     <button onclick="showConverter()">Open Converter</button>
+    <button onclick="showCurrencyConverter()">Open Currency Converter</button>
   </div>
 
   <div id="calculatorSection" class="calculator">
@@ -253,6 +206,29 @@
     <div id="conversionResult"></div>
   </div>
 
+  <div id="currencyConverterSection" class="converter" style="display:none;">
+    <h3>Currency Converter</h3>
+    <input type="number" id="currencyInput" placeholder="Enter amount" />
+    <select id="currencyFrom">
+      <option value="USD">USD</option>
+      <option value="EUR">EUR</option>
+      <option value="TRY">TRY</option>
+      <option value="AED">AED</option>
+      <option value="SAR">SAR</option>
+      <option value="GBP">GBP</option>
+    </select>
+    <select id="currencyTo">
+      <option value="USD">USD</option>
+      <option value="EUR">EUR</option>
+      <option value="TRY">TRY</option>
+      <option value="AED">AED</option>
+      <option value="SAR">SAR</option>
+      <option value="GBP">GBP</option>
+    </select>
+    <button onclick="convertCurrency()">Convert Currency</button>
+    <div id="currencyConversionResult"></div>
+  </div>
+
   <script>
     const historyDisplay = document.getElementById('history');
     const currentDisplay = document.getElementById('current');
@@ -261,10 +237,17 @@
     function showCalculator() {
       document.getElementById('calculatorSection').style.display = 'block';
       document.getElementById('converterSection').style.display = 'none';
+      document.getElementById('currencyConverterSection').style.display = 'none';
     }
     function showConverter() {
       document.getElementById('calculatorSection').style.display = 'none';
       document.getElementById('converterSection').style.display = 'block';
+      document.getElementById('currencyConverterSection').style.display = 'none';
+    }
+    function showCurrencyConverter() {
+      document.getElementById('calculatorSection').style.display = 'none';
+      document.getElementById('converterSection').style.display = 'none';
+      document.getElementById('currencyConverterSection').style.display = 'block';
     }
 
     document.addEventListener('keydown', function(e) {
@@ -354,6 +337,34 @@
       }
 
       resultElement.textContent = `${result} ${unitTo}`;
+    }
+
+    function convertCurrency() {
+      const amount = parseFloat(document.getElementById('currencyInput').value);
+      const from = document.getElementById('currencyFrom').value;
+      const to = document.getElementById('currencyTo').value;
+      const resultElement = document.getElementById('currencyConversionResult');
+
+      if (isNaN(amount)) {
+        resultElement.textContent = 'Please enter a valid amount';
+        return;
+      }
+
+      const url = `https://api.exchangerate.host/convert?from=${from}&to=${to}&amount=${amount}`;
+
+      fetch(url)
+        .then(response => response.json())
+        .then(data => {
+          if(data.result !== undefined) {
+            resultElement.textContent = `${amount} ${from} = ${data.result.toFixed(2)} ${to}`;
+          } else {
+            resultElement.textContent = 'Conversion error.';
+          }
+        })
+        .catch(error => {
+          resultElement.textContent = 'Error fetching conversion rates.';
+          console.error(error);
+        });
     }
   </script>
 </body>
