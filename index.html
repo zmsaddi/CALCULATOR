@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Professional Responsive Calculator with Converter</title>
+  <title>Mobile-Friendly Calculator and Converter</title>
   <style>
     body {
       font-family: 'Roboto', sans-serif;
@@ -11,12 +11,30 @@
       margin: 0;
       padding: 0;
       display: flex;
-      justify-content: center;
+      flex-direction: column;
       align-items: center;
       min-height: 100vh;
       color: #333;
     }
-    .calculator {
+    .toggle-buttons {
+      margin: 10px;
+      display: flex;
+      gap: 10px;
+    }
+    .toggle-buttons button {
+      padding: 10px 20px;
+      font-size: 1em;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      background-color: #4caf50;
+      color: white;
+      transition: background-color 0.3s;
+    }
+    .toggle-buttons button:hover {
+      background-color: #45a049;
+    }
+    .calculator, .converter {
       background-color: #ffffff;
       border-radius: 20px;
       box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
@@ -24,6 +42,7 @@
       width: 100%;
       max-width: 500px;
       box-sizing: border-box;
+      margin-bottom: 20px;
     }
     .display-container {
       background-color: #f8f8f8;
@@ -117,9 +136,6 @@
     .buttons button.percent:hover {
       background-color: #7b1fa2;
     }
-    .converter {
-      margin-top: 20px;
-    }
     .converter select,
     .converter input,
     .converter button {
@@ -141,23 +157,9 @@
     .converter button:hover {
       background-color: #45a049;
     }
-    #conversionResult {
-      margin-top: 10px;
-      font-weight: bold;
-      text-align: center;
-    }
-    @media (max-width: 768px) {
-      .current {
-        font-size: 2em;
-      }
-      .history {
-        font-size: 0.9em;
-      }
-    }
     @media (max-width: 480px) {
       .buttons {
         grid-gap: 8px;
-        grid-template-columns: repeat(4, 1fr);
       }
       .buttons button {
         font-size: 1.3em;
@@ -182,7 +184,12 @@
   </style>
 </head>
 <body>
-  <div class="calculator">
+  <div class="toggle-buttons">
+    <button onclick="showCalculator()">Open Calculator</button>
+    <button onclick="showConverter()">Open Converter</button>
+  </div>
+
+  <div id="calculatorSection" class="calculator">
     <div class="display-container">
       <div class="history" id="history">0</div>
       <div class="current" id="current">0</div>
@@ -218,32 +225,41 @@
       <button style="visibility:hidden;"></button>
       <button style="visibility:hidden;"></button>
     </div>
+  </div>
 
-    <div class="converter">
-      <h3>Unit Converter</h3>
-      <input type="number" id="converterInput" placeholder="Enter value" />
-      <select id="unitFrom">
-        <option value="m">Meters</option>
-        <option value="km">Kilometers</option>
-        <option value="cm">Centimeters</option>
-        <option value="mm">Millimeters</option>
-        <option value="in">Inches</option>
-      </select>
-      <select id="unitTo">
-        <option value="m">Meters</option>
-        <option value="km">Kilometers</option>
-        <option value="cm">Centimeters</option>
-        <option value="mm">Millimeters</option>
-        <option value="in">Inches</option>
-      </select>
-      <button onclick="convertUnits()">Convert</button>
-    </div>
+  <div id="converterSection" class="converter" style="display:none;">
+    <h3>Unit Converter</h3>
+    <input type="number" id="converterInput" placeholder="Enter value" />
+    <select id="unitFrom">
+      <option value="m">Meters</option>
+      <option value="km">Kilometers</option>
+      <option value="cm">Centimeters</option>
+      <option value="mm">Millimeters</option>
+      <option value="in">Inches</option>
+    </select>
+    <select id="unitTo">
+      <option value="m">Meters</option>
+      <option value="km">Kilometers</option>
+      <option value="cm">Centimeters</option>
+      <option value="mm">Millimeters</option>
+      <option value="in">Inches</option>
+    </select>
+    <button onclick="convertUnits()">Convert</button>
   </div>
 
   <script>
     const historyDisplay = document.getElementById('history');
     const currentDisplay = document.getElementById('current');
     let newCalculation = false;
+
+    function showCalculator() {
+      document.getElementById('calculatorSection').style.display = 'block';
+      document.getElementById('converterSection').style.display = 'none';
+    }
+    function showConverter() {
+      document.getElementById('calculatorSection').style.display = 'none';
+      document.getElementById('converterSection').style.display = 'block';
+    }
 
     document.addEventListener('keydown', function(e) {
       if (e.key === 'Enter') {
@@ -257,11 +273,9 @@
         currentDisplay.textContent = value;
         newCalculation = false;
       } else {
-        if (currentDisplay.textContent === '0') {
-          currentDisplay.textContent = value;
-        } else {
-          currentDisplay.textContent += value;
-        }
+        currentDisplay.textContent === '0'
+          ? currentDisplay.textContent = value
+          : currentDisplay.textContent += value;
       }
     }
 
@@ -287,15 +301,12 @@
     function calculate() {
       try {
         let expression = currentDisplay.textContent;
-
         expression = expression.replace(/(\d+(?:\.\d+)?)(\s*[+\-]\s*)(\d+(?:\.\d+)?)%/g, (_, base, operator, perc) => {
           let baseValue = parseFloat(base);
           let percentageValue = (baseValue * parseFloat(perc)) / 100;
           return base + operator + percentageValue;
         });
-
         expression = expression.replace(/(\d+(?:\.\d+)?)%/g, '($1/100)');
-
         const result = eval(expression);
         historyDisplay.textContent = currentDisplay.textContent + ' = ' + result;
         currentDisplay.textContent = result;
